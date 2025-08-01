@@ -1,0 +1,114 @@
+{
+  "units": [
+    {
+      "id": "athlete",
+      "name": "Athlete",
+      "emoji": "🏃",
+      "stats": {
+        "health": 15,
+        "speed": 40,
+        "movement_ticks": 250
+      },
+      "attack": {
+        "type": "melee",
+        "frequency_ticks": 500,
+        "rules": [
+          {
+            "condition": "target_speed > 20",
+            "damage": 2
+          },
+          {
+            "condition": "default",
+            "damage": 5
+          }
+        ]
+      },
+      "behavior": {
+        "stop_on_adjacent_enemy": true
+      }
+    },
+    {
+      "id": "archer",
+      "name": "Archer",
+      "emoji": "🏹",
+      "stats": {
+        "health": 10,
+        "speed": 25,
+        "movement_ticks": 400
+      },
+      "attack": {
+        "type": "ranged",
+        "frequency_ticks": 1200,
+        "range_manhattan": 5,
+        "damage": 8,
+        "projectile_speed": 200
+      },
+      "behavior": {
+        "slow_down": {
+          "condition_range_manhattan": 5,
+          "new_speed": 7,
+          "new_movement_ticks": 1500
+        },
+        "stop_on_enemy_in_lane": 4
+      }
+    },
+    {
+      "id": "bouncer",
+      "name": "Bouncer",
+      "emoji": "🦍",
+      "stats": {
+        "health": 28,
+        "speed": 10,
+        "movement_ticks": 1000
+      },
+      "attack": {
+        "type": "melee",
+        "frequency_ticks": 600,
+        "damage": 12
+      },
+      "behavior": {
+        "stop_on_adjacent_enemy": true
+      }
+    },
+    {
+      "id": "rogue",
+      "name": "Rogue",
+      "emoji": "🔪",
+      "stats": {
+        "health": 3,
+        "speed": 29,
+        "movement_ticks": 350
+      },
+      "attack": {
+        "type": "melee",
+        "frequency_ticks": 1600,
+        "damage": 20
+      },
+      "behavior": {
+        "stop_on_enemy_in_lane": 2
+      }
+    },
+    {
+      "id": "supporter",
+      "name": "Supporter",
+      "emoji": "💉",
+      "stats": {
+        "health": 5,
+        "speed": 18,
+        "movement_ticks": 550
+      },
+      "attack": {
+        "type": "melee",
+        "frequency_ticks": 100,
+        "damage": 1
+      },
+      "behavior": {
+        "heal": {
+          "frequency_ticks": 300,
+          "range_manhattan": 2,
+          "initial_power": 10
+        }
+      }
+    }
+  ]
+}
