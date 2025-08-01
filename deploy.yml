@@ -1,0 +1,40 @@
+# Name of the workflow, displayed in the GitHub UI
+name: Build and Deploy to GitHub Pages
+
+# Trigger: This workflow runs on every push to the 'main' branch
+on:
+  push:
+    branches:
+      - main
+
+# Permissions for the job to deploy to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Since this project contains only static files (HTML, CSS, JS, JSON),
+      # there is no build step necessary. If your game uses a build tool
+      # (for example, bundling or transpiling), insert those commands here.
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
