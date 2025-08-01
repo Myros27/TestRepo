@@ -28,7 +28,14 @@ To establish a common foundation, the following terms are defined:
     *   A **"Trash Can" icon** will be visible to remove units from the board during the preparation phase.
     *   A **Debug Panel** will be maintained for testing purposes (Start Battle, +/- for lanes).
 
-*(The remaining requirements for the Game Board and Game Flow from your original document remain unchanged, as they are already well-defined.)*
+
+*   **Basic Structure:** A grid of 30 columns and initially one row (30x1).
+*   **Expansion:** The game board can be expanded up to 30 columns x 7 rows.
+*   **Prototype Controls:** For testing purposes, a **Debug Panel** will be implemented with "+/-" buttons to dynamically change the number of rows.
+*   **Placement Zones:**
+    *   **Player Zone:** Columns 1 to 10.
+    *   **Neutral Zone:** Columns 11 to 20.
+    *   **Opponent Zone:** Columns 21 to 30.
 
 ---
 
