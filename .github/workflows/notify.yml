@@ -1,0 +1,18 @@
+name: Trigger ntfy notification
+
+on:
+  repository_dispatch:
+    types: [ntfy-push]
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send to ntfy
+        run: |
+          curl -s \
+            -H "Title: ${{ github.event.client_payload.title }}" \
+            -H "Click: ${{ github.event.client_payload.click }}" \
+            -H "Attach: ${{ github.event.client_payload.attach }}" \
+            -d "${{ github.event.client_payload.msg }}" \
+            https://ntfy.sh/chat-gpt-myros
