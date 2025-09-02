@@ -1,17 +1,18 @@
-# Name of the workflow, displayed in the GitHub UI
 name: Build and Deploy to GitHub Pages
 
-# Trigger: This workflow runs on every push to the 'main' branch
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  workflow_dispatch:
 
-# Permissions for the job to deploy to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -26,14 +27,10 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Since this project contains only static files (HTML, CSS, JS, JSON),
-      # there is no build step necessary. If your game uses a build tool
-      # (for example, bundling or transpiling), insert those commands here.
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: "."   # Falls du später z.B. /dist nutzt: hier anpassen
 
       - name: Deploy to GitHub Pages
         id: deployment
