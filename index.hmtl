@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pipedream Auto-Trigger</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root { --gap: 12px; --rad: 14px; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial; margin: 0; }
+    .wrap { max-width: 860px; margin: 24px auto; padding: 0 16px; }
+    h1 { margin: 0 0 10px; font-size: 1.4rem; }
+    .card { border: 1px solid color-mix(in oklab, CanvasText 20%, transparent); border-radius: var(--rad); padding: 16px; margin: 16px 0; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .status { white-space: pre-wrap; word-break: break-word; }
+    .muted { opacity: .8; }
+    a.btn { display: inline-block; padding: 10px 14px; border-radius: 12px;
+      border: 1px solid color-mix(in oklab, CanvasText 20%, transparent);
+      text-decoration: none; color: ButtonText; background: ButtonFace; }
+    a.btn:hover { filter: brightness(1.05); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Pipedream Auto-Trigger</h1>
+
+    <section class="card">
+      <p class="muted">
+        Diese Seite löst bei Aufruf automatisch deinen <strong>Pipedream</strong>-Webhook aus.<br/>
+        Übergib Parameter per URL: <code>endpoint</code> (Pflicht), <code>msg</code> (Pflicht),
+        optional <code>title</code>, <code>click</code>, <code>attach</code>.
+      </p>
+      <pre class="muted"><code>
+Beispiel:
+?endpoint=https%3A%2F%2Feo7p4gusw4mt9lt.m.pipedream.net&msg=Hallo%20Myros!%20%F0%9F%8E%89&title=Hi
+      </code></pre>
+      <div id="status" class="status">Warte…</div>
+      <div id="fallback"></div>
+    </section>
+
+    <section class="card">
+      <h2>Debug</h2>
+      <div id="debug" class="status"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (s, r=document) => r.querySelector(s);
+    const statusEl = $('#status');
+    const debugEl = $('#debug');
+    const fallbackEl = $('#fallback');
+    const params = new URLSearchParams(location.search);
+
+    function buildPipedreamURL(endpoint, { msg, title, click, attach }) {
+      const sp = new URLSearchParams();
+      if (msg) sp.set('msg', msg);
+      if (title) sp.set('title', title);
+      if (click) sp.set('click', click);
+      if (attach) sp.set('attach', attach);
+      // endpoint darf bereits Query haben; wir fügen “?”/“&” korrekt an
+      const sep = endpoint.includes('?') ? '&' : '?';
+      return endpoint + sep + sp.toString();
+    }
+
+    function showUsage(errText) {
+      statusEl.textContent = '❌ ' + errText + '\n\nErforderliche Parameter: endpoint, msg';
+      const example = location.origin + location.pathname +
+        '?endpoint=' + encodeURIComponent('https://eo7p4gusw4mt9lt.m.pipedream.net') +
+        '&msg=' + encodeURIComponent('Hallo Myros! 🎉') +
+        '&title=' + encodeURIComponent('Hi');
+      fallbackEl.innerHTML = 'Beispiel-Link: ' +
+        '<a class="btn" href="' + example + '">Auto-Trigger Beispiel</a>';
+    }
+
+    async function autotrigger() {
+      const endpoint = (params.get('endpoint') || '').trim();
+      const msg = params.get('msg');
+      const title = params.get('title') || '';
+      const click = params.get('click') || '';
+      const attach = params.get('attach') || '';
+
+      debugEl.textContent =
+        'endpoint: ' + endpoint + '\n' +
+        'msg: ' + (msg ?? '(null)') + '\n' +
+        'title: ' + title + '\n' +
+        'click: ' + click + '\n' +
+        'attach: ' + attach + '\n';
+
+      if (!endpoint) return showUsage('Parameter "endpoint" fehlt.');
+      if (msg == null) return showUsage('Parameter "msg" fehlt.');
+
+      const url = buildPipedreamURL(endpoint, { msg, title, click, attach });
+      statusEl.textContent = 'Sende…\n' + url;
+
+      try {
+        const res = await fetch(url, { method: 'GET', mode: 'cors' });
+        if (res.ok) {
+          statusEl.textContent = '✅ Success (HTTP ' + res.status + ')\n' + url;
+        } else {
+          statusEl.textContent = '⚠️ Anfrage gesendet, aber Antwortstatus: ' + res.status + '\n' + url;
+        }
+      } catch (e) {
+        statusEl.textContent = '⚠️ Browser hat evtl. CORS geblockt oder Netzwerkfehler.\n' + (e && e.message ? e.message : e);
+        // Fallback-Link zum manuellen Öffnen
+        fallbackEl.innerHTML = '→ <a class="btn" href="' + url + '" target="_blank" rel="noopener">Fallback-Link direkt ausführen</a>';
+      }
+    }
+
+    autotrigger();
+  </script>
+</body>
+</html>
